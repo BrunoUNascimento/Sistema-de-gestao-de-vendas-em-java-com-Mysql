@@ -2,7 +2,7 @@ package br.com.compulog.telas;
 
 import java.sql.*;
 import br.com.compulog.dao.Conexao;
-import com.mysql.cj.xdevapi.PreparableStatement;
+
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 
