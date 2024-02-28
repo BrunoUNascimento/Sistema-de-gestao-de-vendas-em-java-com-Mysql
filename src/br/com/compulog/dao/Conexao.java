@@ -7,6 +7,7 @@ import java.sql.*;
 import javax.swing.JOptionPane;
 
 public class Conexao {
+    
     public static Connection conector(){
     java.sql.Connection conexao = null;
     
@@ -18,13 +19,14 @@ public class Conexao {
     
     
         try {
+            conexao.setAutoCommit(true);
             Class.forName(driver);
             conexao = DriverManager.getConnection(url,user,password);
             System.out.println(conexao);
             return conexao;
             
         } catch (Exception e) {
-            
+            e.printStackTrace(); // Adicionando informações detalhadas da exceção
             System.out.println("Falha na conexão");
             return null;
         }

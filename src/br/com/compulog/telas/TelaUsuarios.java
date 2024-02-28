@@ -1,11 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
- */
 package br.com.compulog.telas;
 
 import br.com.compulog.dao.Conexao;
-import com.mysql.cj.jdbc.PreparedStatementWrapper;
+//import com.mysql.cj.jdbc.PreparedStatementWrapper;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
@@ -20,13 +16,12 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-
+    String btnConfirmaAlteracao;
     public TelaUsuarios() {
         initComponents();
         conexao = Conexao.conector();
         
         txtIdUsu.addActionListener(new ActionListener() {
-            
             
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -39,6 +34,7 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
         
     }
     
+    //Metodo de pesquisa ao banco de dados
     private void consultar(){
         String sql = "select * from usuarios where iduser=?";
         try {
@@ -57,52 +53,91 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
             
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+        
+        }finally {
+            // Feche o PreparedStatement no bloco finally para garantir que seja fechado, independentemente do resultado
+            try {
+                if (pst != null) {
+                    pst.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
     
-    
+    //Metodo para adicionar usuarios ao banco de dados
     private void adicionar() {
-    String sql = "INSERT INTO usuarios (iduser, usuario, login, senha, perfil) VALUES (?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO usuarios (usuario, login, senha, perfil) VALUES ( ?, ?, ?,?)";
     
     try {
-        pst = conexao.prepareStatement(sql);
-        pst.setString(1, txtIdUsu.getText());
-        pst.setString(2, txtNomeUsu.getText());
-        pst.setString(3, txtLogin.getText());  
-        pst.setString(4, txtSenhaUsu.getText());
-        pst.setString(5, (String) cboPerfil.getSelectedItem());
-
-        int rowsAffected = pst.executeUpdate();
-
-        if (rowsAffected > 0) {
-            JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
-        } else {
-            JOptionPane.showMessageDialog(null, "Falha ao cadastrar usuário");
-        }
+        pst = conexao.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+        //pst.setString(1, txtIdUsu.getText());
+        pst.setString(1, txtNomeUsu.getText());
+        pst.setString(2, txtLogin.getText());  
+        pst.setString(3, txtSenhaUsu.getText());
+        pst.setString(4, (String) cboPerfil.getSelectedItem());
+        JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
+        
     } catch (Exception e) {
         JOptionPane.showMessageDialog(null, "Falha ao cadastrar, verifique os campos: " + e.getMessage());
-    }
-}
     
+    }finally {
+        // Feche o PreparedStatement no bloco finally para garantir que seja fechado, independentemente do resultado
+        try {
+            if (pst != null) {
+                pst.close();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    }
+
+    
+    //Metodo para alterar usuarios do banco de dados
+    private void alterar(){
+        String perfilSelecionado = (String) cboPerfil.getSelectedItem();
+        String sql = "update usuarios set usuario=?,login=?,senha=?,perfil=? where iduser=?";
+        try {
+        pst = conexao.prepareStatement(sql);
+        
+        pst.setString(1, txtNomeUsu.getText());
+        pst.setString(2, txtLogin.getText());
+        pst.setString(3, txtSenhaUsu.getText());
+        pst.setString(4, perfilSelecionado);
+        pst.setString(5, txtIdUsu.getText());
+        
+            
+        JOptionPane.showMessageDialog(null, "Usuario alterado com sucesso");
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro ao alterar" + e);
+        }finally {
+            // Feche o PreparedStatement no bloco finally para garantir que seja fechado, independentemente do resultado
+            try {
+                if (pst != null) {
+                    pst.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
     
     
     private void habilitarCampos(){
-        
-        
         txtNomeUsu.setEnabled(true);
         txtSenhaUsu.setEnabled(true);
         txtLogin.setEnabled(true);
         cboPerfil.setEnabled(true);
-        
     }
-    
     private void desabilitarCampos(){
         txtNomeUsu.setEnabled(false);
         txtSenhaUsu.setEnabled(false);
         txtLogin.setEnabled(false);
         cboPerfil.setEnabled(false);
     }
-            
     private void limparCampos(){
         txtIdUsu.setText(null);
         txtNomeUsu.setText(null);
@@ -110,11 +145,9 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
         txtLogin.setText(null);
         cboPerfil.setSelectedItem(" ");
     }
-    
     private void cancelaAdicionar(){
         btnConfirmaUsu.setVisible(false);
         btnCancelaUsu.setVisible(false);
-        limparCampos();
         desabilitarCampos();
     }
     
@@ -135,7 +168,7 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
         cboPerfil = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         btnAdicionar = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnAlterar = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         txtIdUsu = new javax.swing.JTextField();
         btnConfirmaUsu = new javax.swing.JButton();
@@ -171,7 +204,12 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/compulog/icones/editar.png"))); // NOI18N
+        btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/compulog/icones/editar.png"))); // NOI18N
+        btnAlterar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAlterarActionPerformed(evt);
+            }
+        });
 
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/compulog/icones/remover.png"))); // NOI18N
 
@@ -229,7 +267,7 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
                         .addGap(152, 152, 152)
                         .addComponent(btnAdicionar)
                         .addGap(114, 114, 114)
-                        .addComponent(jButton3)
+                        .addComponent(btnAlterar)
                         .addGap(119, 119, 119)
                         .addComponent(jButton4)))
                 .addContainerGap(249, Short.MAX_VALUE))
@@ -256,7 +294,7 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 241, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnAdicionar)
-                    .addComponent(jButton3)
+                    .addComponent(btnAlterar)
                     .addComponent(jButton4))
                 .addGap(147, 147, 147))
         );
@@ -265,6 +303,7 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
+        btnConfirmaAlteracao = "confirmar inclusao";
         limparCampos();
         habilitarCampos();
         btnConfirmaUsu.setVisible(true);
@@ -272,8 +311,12 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     private void btnConfirmaUsuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmaUsuActionPerformed
-        
-        adicionar();
+        if(btnConfirmaAlteracao.equals("confirmar alteração")){
+            alterar();
+        }else if (btnConfirmaAlteracao.equals("confirmar inclusao")){
+            adicionar();
+            
+        }
         desabilitarCampos();
     }//GEN-LAST:event_btnConfirmaUsuActionPerformed
 
@@ -281,13 +324,20 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
        cancelaAdicionar();
     }//GEN-LAST:event_btnCancelaUsuActionPerformed
 
+    private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
+        btnConfirmaAlteracao = "confirmar alteração";
+        habilitarCampos();
+        btnConfirmaUsu.setVisible(true);
+        btnCancelaUsu.setVisible(true);
+    }//GEN-LAST:event_btnAlterarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdicionar;
+    private javax.swing.JButton btnAlterar;
     private javax.swing.JButton btnCancelaUsu;
     private javax.swing.JButton btnConfirmaUsu;
     private javax.swing.JComboBox<String> cboPerfil;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

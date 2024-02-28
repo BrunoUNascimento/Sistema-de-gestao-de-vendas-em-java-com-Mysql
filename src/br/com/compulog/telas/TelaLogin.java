@@ -2,7 +2,7 @@ package br.com.compulog.telas;
 
 import java.sql.*;
 import br.com.compulog.dao.Conexao;
-
+//import com.mysql.cj.xdevapi.PreparableStatement;
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 
@@ -11,7 +11,7 @@ public class TelaLogin extends javax.swing.JFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-
+   
     public void logar(){
         String sql = "select * from usuarios where login=? and senha=?";
         try {
@@ -21,14 +21,14 @@ public class TelaLogin extends javax.swing.JFrame {
             pst.setString(2,captura);
              rs = pst.executeQuery();
              if(rs.next()){
-                 
+                 TelaPrincipal telaprincipal = new TelaPrincipal();
                  String perfil = rs.getString(5);
                  if(perfil.equals("admin")){
-                    TelaPrincipal telaprincipal = new TelaPrincipal();
-                    telaprincipal.setVisible(true);
                     TelaPrincipal.menRelatorios.setEnabled(true);
                     TelaPrincipal.menUsu.setEnabled(true);
                  }
+                 
+                 telaprincipal.setVisible(true);
                  this.dispose();
                  
              }else{
