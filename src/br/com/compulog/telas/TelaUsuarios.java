@@ -67,23 +67,26 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
     }
     
     //Metodo para adicionar usuarios ao banco de dados
-    private void adicionar() {
-    String sql = "INSERT INTO usuarios (usuario, login, senha, perfil) VALUES ( ?, ?, ?,?)";
+   private void adicionar() {
+    String sql = "INSERT INTO usuarios (usuario, login, senha, perfil) VALUES (?, ?, ?, ?)";
     
     try {
-        pst = conexao.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-        //pst.setString(1, txtIdUsu.getText());
+        pst = conexao.prepareStatement(sql);
         pst.setString(1, txtNomeUsu.getText());
         pst.setString(2, txtLogin.getText());  
         pst.setString(3, txtSenhaUsu.getText());
         pst.setString(4, (String) cboPerfil.getSelectedItem());
-        JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
-        
+        int rowsAffected = pst.executeUpdate();
+
+        if (rowsAffected > 0) {
+            JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
+        } else {
+            JOptionPane.showMessageDialog(null, "Falha ao cadastrar usuário");
+        }
     } catch (Exception e) {
         JOptionPane.showMessageDialog(null, "Falha ao cadastrar, verifique os campos: " + e.getMessage());
-    
     }finally {
-        // Feche o PreparedStatement no bloco finally para garantir que seja fechado, independentemente do resultado
+        // Fechamento do PrareStatement
         try {
             if (pst != null) {
                 pst.close();
@@ -92,7 +95,7 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
             ex.printStackTrace();
         }
     }
-    }
+}
 
     
     //Metodo para alterar usuarios do banco de dados
@@ -308,11 +311,13 @@ public class TelaUsuarios extends javax.swing.JInternalFrame {
         habilitarCampos();
         btnConfirmaUsu.setVisible(true);
         btnCancelaUsu.setVisible(true);
+        txtIdUsu.setEnabled(false);
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     private void btnConfirmaUsuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmaUsuActionPerformed
         if(btnConfirmaAlteracao.equals("confirmar alteração")){
             alterar();
+            
         }else if (btnConfirmaAlteracao.equals("confirmar inclusao")){
             adicionar();
             

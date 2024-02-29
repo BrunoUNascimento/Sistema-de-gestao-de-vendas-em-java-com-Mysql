@@ -19,7 +19,7 @@ public class Conexao {
     
     
         try {
-            conexao.setAutoCommit(true);
+            
             Class.forName(driver);
             conexao = DriverManager.getConnection(url,user,password);
             System.out.println(conexao);

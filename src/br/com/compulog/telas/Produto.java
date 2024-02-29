@@ -18,26 +18,26 @@ public class Produto extends javax.swing.JInternalFrame {
     PreparedStatement pst = null;
     ResultSet rs = null;
     
+    
     //Contrutor
     public Produto() {
         initComponents();
         conexao = Conexao.conector();
-        btnConfirma.setVisible(false);
+        btnConfirmar.setVisible(false);
+        btnCancelar.setVisible(false);
+        
+        //Para pesquisar quando pressionar enter
         txtIdProduto.addActionListener(new ActionListener() {
-            
-            
             @Override
             public void actionPerformed(ActionEvent e) {
                 consultar();
             }
         });
     
-        btnConfirAlt.setVisible(false);
-        btnCancelaA.setVisible(false);
-        btnCancelaN.setVisible(false);
         
     }
-    
+    //String que vai determinar a ação do botão confirmar
+    String confirma;
     
     
     private void consultar(){
@@ -65,10 +65,7 @@ public class Produto extends javax.swing.JInternalFrame {
                 btnExcluir.setEnabled(false);
                 
             }
-            
-            
-            
-        } catch (Exception e) {
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null,e);
         }
     }
@@ -76,45 +73,42 @@ public class Produto extends javax.swing.JInternalFrame {
     
     //Metodo para consultar produto no banco de dados
     private void adicionar(){
+        
         String sql = "insert into produto(idproduto,nomeproduto,preco,tipo,estoque) value (?,?,?,?,?)";
         try {
-        pst = conexao.prepareStatement(sql);
-        pst.setString(1, txtIdProduto.getText());
-        pst.setString(2, txtDescricao.getText());
-        pst.setString(3, txtPreco.getText());
-        pst.setString(4, txtTipo.getText());
-        pst.setString(5, txtEstoque.getText());
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtIdProduto.getText());
+            pst.setString(2, txtDescricao.getText());
+            pst.setString(3, txtPreco.getText());
+            pst.setString(4, txtTipo.getText());
+            pst.setString(5, txtEstoque.getText());
 
-        // Executar a atualização no banco de dados
-        int rowsAffected = pst.executeUpdate();
+            // Executar a atualização no banco de dados
+            int rowsAffected = pst.executeUpdate();
 
-        if (rowsAffected > 0) {
-            JOptionPane.showMessageDialog(null, "Produto adicionado com sucesso");
-        } else {
-            JOptionPane.showMessageDialog(null, "Falha ao adicionar produto");
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Produto adicionado com sucesso");
+            } else {
+                JOptionPane.showMessageDialog(null, "Falha ao adicionar produto");
+            }
+            btnConfirmar.setVisible(false);
+            btnCancelar.setVisible(false);
+
+        }catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            btnConfirmar.setVisible(false);
+            btnCancelar.setVisible(false);
         }
-        btnConfirma.setVisible(false);
-        btnCancelaN.setVisible(false);
-        
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, e);
-        btnConfirma.setVisible(false);
-        btnCancelaN.setVisible(false);
+        desativarAtributosProduto();
     }
-        
-    btnConfirma.setEnabled(false);
-    desativarAtributosProduto();
     
     
     
-    }
     
     //Metodo para excluir produto do banco de dados
     public void excluir(){
         int excluir = JOptionPane.showConfirmDialog(null,"Tem certeza que deseja excluir este item?","Atenção",JOptionPane.YES_NO_OPTION);
         if(excluir == JOptionPane.YES_OPTION){
-            
-        
             String sql = "delete from produto where idproduto=?";
             try {
                 pst = conexao.prepareStatement(sql);
@@ -136,18 +130,15 @@ public class Produto extends javax.swing.JInternalFrame {
             } else {
                 JOptionPane.showMessageDialog(null, "Falha ao excluir produto");
             }
-
-
-
-
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Erro ao excluir produto: " + e.getMessage());
             }
-
-
-
         }
     }
+    
+    
+    
+    
     
     //METODO PARA LIMPAR OS CAMPOS DO PRODUTO E HABILITAR DIGITAÇÃO NOS CAMPOS
     private void ativarAtributosProduto(){
@@ -164,8 +155,11 @@ public class Produto extends javax.swing.JInternalFrame {
         txtEstoque.setEnabled(true);
     }
     
+    
+    
     //metodo para alterar produto no banco de dados
     private void alterar(){
+        
         String sql = "update produto set nomeproduto=?,preco=?,tipo=?,estoque=? where idproduto=?";
         try {
         pst = conexao.prepareStatement(sql);
@@ -176,7 +170,6 @@ public class Produto extends javax.swing.JInternalFrame {
         pst.setString(4, txtEstoque.getText());
         pst.setString(5, txtIdProduto.getText());
         
-
         // Executar a atualização no banco de dados
         int rowsAffected = pst.executeUpdate();
 
@@ -228,8 +221,16 @@ public class Produto extends javax.swing.JInternalFrame {
         txtTipo.setEnabled(false);
         txtEstoque.setEnabled(false);
     }
-    
-    
+    public void desabilitarBotoes(){
+        btnAlterar.setEnabled(false);
+        btnNovo.setEnabled(false);
+        btnExcluir.setEnabled(false);
+    }
+    public void habilitarBotoes(){
+        btnAlterar.setEnabled(true);
+        btnNovo.setEnabled(true);
+        btnExcluir.setEnabled(true);
+    }
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -245,16 +246,13 @@ public class Produto extends javax.swing.JInternalFrame {
         txtEstoque = new javax.swing.JTextField();
         txtTipo = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        btnConsultar = new javax.swing.JButton();
         btnNovo = new javax.swing.JButton();
-        btnConfirma = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         btnAlterar = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
-        btnConfirAlt = new javax.swing.JButton();
-        btnCancelaN = new javax.swing.JButton();
-        btnCancelaA = new javax.swing.JButton();
+        btnConfirmar = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
 
         setBackground(null);
         setClosable(true);
@@ -293,24 +291,10 @@ public class Produto extends javax.swing.JInternalFrame {
 
         jLabel4.setText("Tipo");
 
-        btnConsultar.setText("Consultar");
-        btnConsultar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConsultarActionPerformed(evt);
-            }
-        });
-
         btnNovo.setText("Novo");
         btnNovo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNovoActionPerformed(evt);
-            }
-        });
-
-        btnConfirma.setText("Confirmar");
-        btnConfirma.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConfirmaActionPerformed(evt);
             }
         });
 
@@ -333,24 +317,17 @@ public class Produto extends javax.swing.JInternalFrame {
             }
         });
 
-        btnConfirAlt.setText("Confirmar");
-        btnConfirAlt.addActionListener(new java.awt.event.ActionListener() {
+        btnConfirmar.setText("Confirmar");
+        btnConfirmar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConfirAltActionPerformed(evt);
+                btnConfirmarActionPerformed(evt);
             }
         });
 
-        btnCancelaN.setText("Cancela");
-        btnCancelaN.addActionListener(new java.awt.event.ActionListener() {
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelaNActionPerformed(evt);
-            }
-        });
-
-        btnCancelaA.setText("Cancela");
-        btnCancelaA.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelaAActionPerformed(evt);
+                btnCancelarActionPerformed(evt);
             }
         });
 
@@ -362,58 +339,55 @@ public class Produto extends javax.swing.JInternalFrame {
                 .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel3)
-                                            .addComponent(jLabel6)
-                                            .addComponent(jLabel2))
+                                        .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel4)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(txtTipo))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addGroup(layout.createSequentialGroup()
-                                                .addComponent(txtPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(jLabel4)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(txtTipo))
-                                            .addComponent(txtEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel1)
-                                        .addGap(21, 21, 21)
-                                        .addComponent(txtIdProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(30, 30, 30)
-                                        .addComponent(btnConsultar)
-                                        .addGap(0, 0, Short.MAX_VALUE)))
-                                .addGap(142, 142, 142))
+                                                .addComponent(btnConfirmar, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(23, 23, 23)
+                                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(txtDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                            .addComponent(txtEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                            .addGap(85, 85, 85))
+                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                            .addComponent(btnAlterar, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                            .addGap(58, 58, 58)))
+                                                    .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addGap(0, 0, Short.MAX_VALUE))))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnConfirma)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnCancelaN))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btnAlterar, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnConfirAlt)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnCancelaA)))
+                                .addComponent(jLabel1)
+                                .addGap(21, 21, 21)
+                                .addComponent(txtIdProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(93, 93, 93)
-                                .addComponent(jLabel8)
-                                .addGap(270, 270, 270))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(381, 381, 381))))))
+                        .addGap(142, 142, 142))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(93, 93, 93)
+                        .addComponent(jLabel8)
+                        .addGap(270, 270, 270))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(381, 381, 381))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -424,7 +398,8 @@ public class Produto extends javax.swing.JInternalFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(txtIdProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnConsultar))
+                            .addComponent(btnConfirmar)
+                            .addComponent(btnCancelar))
                         .addGap(13, 13, 13)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
@@ -442,18 +417,12 @@ public class Produto extends javax.swing.JInternalFrame {
                         .addGap(86, 86, 86)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnNovo)
-                            .addComponent(btnConfirma)
-                            .addComponent(btnCancelaN)))
+                            .addComponent(btnAlterar)
+                            .addComponent(btnExcluir)))
                     .addComponent(jLabel8))
-                .addGap(34, 34, 34)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(btnAlterar)
-                    .addComponent(btnConfirAlt)
-                    .addComponent(btnCancelaA))
-                .addGap(32, 32, 32)
-                .addComponent(btnExcluir)
-                .addGap(134, 134, 134))
+                .addGap(37, 37, 37)
+                .addComponent(jLabel5)
+                .addGap(193, 193, 193))
         );
 
         setBounds(0, 0, 1037, 585);
@@ -463,62 +432,49 @@ public class Produto extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtTipoActionPerformed
 
-    private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
-        consultar();
-    }//GEN-LAST:event_btnConsultarActionPerformed
-
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
-        btnConfirma.setVisible(true);
+        confirma = "adicionar";
+        btnConfirmar.setVisible(true);
         ativarAtributosProduto();
-        btnCancelaN.setVisible(true);
+        btnCancelar.setVisible(true);
+        desabilitarBotoes();
     }//GEN-LAST:event_btnNovoActionPerformed
-
-    private void btnConfirmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmaActionPerformed
-        adicionar();
-        desativarAtributosProduto();
-        
-        
-    }//GEN-LAST:event_btnConfirmaActionPerformed
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
         excluir();
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
+        confirma = "alterar";
         habilitarCampos();
-        btnConfirAlt.setVisible(true);
-        btnCancelaA.setVisible(true);
+        btnConfirmar.setVisible(true);
+        btnCancelar.setVisible(true);
+        desabilitarBotoes();
         
     }//GEN-LAST:event_btnAlterarActionPerformed
 
-    private void btnConfirAltActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirAltActionPerformed
-        alterar();
-        desabilitarCampos();
-        btnConfirAlt.setVisible(false);
-    }//GEN-LAST:event_btnConfirAltActionPerformed
+    private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
+        if(confirma.equals("adicionar")){
+            adicionar();
+            desabilitarCampos();
+        }else{
+            alterar();
+            desabilitarCampos();
+        }
+        habilitarBotoes();
+    }//GEN-LAST:event_btnConfirmarActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        desativarAtributosProduto();
+        habilitarBotoes();
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     
-    //Botão para cancelar a alteração do produto
-    private void btnCancelaAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelaAActionPerformed
-        desabilitarCampos();
-        btnConfirAlt.setVisible(false);
-        btnCancelaA.setVisible(false);
-    }//GEN-LAST:event_btnCancelaAActionPerformed
-
-    private void btnCancelaNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelaNActionPerformed
-       desabilitarCampos();
-       btnConfirma.setVisible(false);
-       btnCancelaN.setVisible(false);
-    }//GEN-LAST:event_btnCancelaNActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAlterar;
-    private javax.swing.JButton btnCancelaA;
-    private javax.swing.JButton btnCancelaN;
-    private javax.swing.JButton btnConfirAlt;
-    private javax.swing.JButton btnConfirma;
-    private javax.swing.JButton btnConsultar;
+    private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnConfirmar;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnNovo;
     private javax.swing.JLabel jLabel1;
