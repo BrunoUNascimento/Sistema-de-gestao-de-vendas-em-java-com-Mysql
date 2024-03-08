@@ -36,9 +36,9 @@ public class TelaLogin extends javax.swing.JFrame {
                  lblUsuario.setText("");
                  lblSenha.setText("");
              }
-            
-        } catch (Exception e) {
-            
+        } 
+        catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: "+e);
         }
     }
     
@@ -51,9 +51,6 @@ public class TelaLogin extends javax.swing.JFrame {
         } else {
             lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/compulog/icones/dberro.png")));
         }
-        
-        
-         
         
     }
     

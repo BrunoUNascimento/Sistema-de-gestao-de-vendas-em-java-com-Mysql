@@ -17,38 +17,16 @@ public class Conexao {
     String user = "root";
     String password = "root";
     
-    
         try {
-            
             Class.forName(driver);
             conexao = DriverManager.getConnection(url,user,password);
             System.out.println(conexao);
             return conexao;
-            
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace(); // Adicionando informações detalhadas da exceção
             System.out.println("Falha na conexão");
             return null;
         }
-    
     }
-
-
-
-
-
-
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

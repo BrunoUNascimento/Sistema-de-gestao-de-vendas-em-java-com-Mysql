@@ -7,17 +7,22 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
-
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 
 public class Produto extends javax.swing.JInternalFrame {
 
-    
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
     
+     //String que vai determinar a ação do botão confirmar
+    String confirma;
     
     //Contrutor
     public Produto() {
@@ -33,13 +38,13 @@ public class Produto extends javax.swing.JInternalFrame {
                 consultar();
             }
         });
-    
+        
+        btnAlterar.setVisible(false);
+        btnExcluir.setVisible(false);
         
     }
-    //String que vai determinar a ação do botão confirmar
-    String confirma;
     
-    
+    //Método para consulta ao banco de dados
     private void consultar(){
         String sql ="select * from produto where idproduto=?";
         try {
@@ -54,6 +59,8 @@ public class Produto extends javax.swing.JInternalFrame {
                 txtEstoque.setText(rs.getString(5));
                 btnAlterar.setEnabled(true);
                 btnExcluir.setEnabled(true);
+                btnAlterar.setVisible(true);
+                btnExcluir.setVisible(true);
                 
             }else{
                 JOptionPane.showMessageDialog(null,"Produto não encontrado");
@@ -63,25 +70,25 @@ public class Produto extends javax.swing.JInternalFrame {
                 txtEstoque.setText(null);
                 btnAlterar.setEnabled(false);
                 btnExcluir.setEnabled(false);
-                
+                btnAlterar.setVisible(false);
+                btnExcluir.setVisible(false);
             }
-        }catch (Exception e) {
+        }
+        catch (Exception e) {
             JOptionPane.showMessageDialog(null,e);
         }
     }
 
     
-    //Metodo para consultar produto no banco de dados
+    //Metodo para adicionar produto ao banco de dados
     private void adicionar(){
-        
-        String sql = "insert into produto(idproduto,nomeproduto,preco,tipo,estoque) value (?,?,?,?,?)";
+        String sql = "insert into produto(nomeproduto,preco,tipo,estoque) value (?,?,?,?)";
         try {
             pst = conexao.prepareStatement(sql);
-            pst.setString(1, txtIdProduto.getText());
-            pst.setString(2, txtDescricao.getText());
-            pst.setString(3, txtPreco.getText());
-            pst.setString(4, txtTipo.getText());
-            pst.setString(5, txtEstoque.getText());
+            pst.setString(1, txtDescricao.getText());
+            pst.setString(2, txtPreco.getText());
+            pst.setString(3, txtTipo.getText());
+            pst.setString(4, txtEstoque.getText());
 
             // Executar a atualização no banco de dados
             int rowsAffected = pst.executeUpdate();
@@ -99,10 +106,10 @@ public class Produto extends javax.swing.JInternalFrame {
             btnConfirmar.setVisible(false);
             btnCancelar.setVisible(false);
         }
-        desativarAtributosProduto();
+        limparAtributosProduto();
+        desabilitarCampos();
+        
     }
-    
-    
     
     
     //Metodo para excluir produto do banco de dados
@@ -110,6 +117,8 @@ public class Produto extends javax.swing.JInternalFrame {
         int excluir = JOptionPane.showConfirmDialog(null,"Tem certeza que deseja excluir este item?","Atenção",JOptionPane.YES_NO_OPTION);
         if(excluir == JOptionPane.YES_OPTION){
             String sql = "delete from produto where idproduto=?";
+            btnAlterar.setVisible(false);
+            btnExcluir.setVisible(false);
             try {
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtIdProduto.getText());
@@ -126,7 +135,8 @@ public class Produto extends javax.swing.JInternalFrame {
                 txtEstoque.setText(null);
 
                 // Desativar os atributos do produto na tela
-                desativarAtributosProduto();
+                limparAtributosProduto();
+                desabilitarCampos();
             } else {
                 JOptionPane.showMessageDialog(null, "Falha ao excluir produto");
             }
@@ -134,26 +144,9 @@ public class Produto extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(null, "Erro ao excluir produto: " + e.getMessage());
             }
         }
+        
     }
     
-    
-    
-    
-    
-    //METODO PARA LIMPAR OS CAMPOS DO PRODUTO E HABILITAR DIGITAÇÃO NOS CAMPOS
-    private void ativarAtributosProduto(){
-        txtIdProduto.setText(null);
-        txtDescricao.setText(null);
-        txtPreco.setText(null);
-        txtTipo.setText(null);
-        txtEstoque.setText(null);
-        
-        
-        txtDescricao.setEnabled(true);
-        txtPreco.setEnabled(true);
-        txtTipo.setEnabled(true);
-        txtEstoque.setEnabled(true);
-    }
     
     
     
@@ -174,23 +167,18 @@ public class Produto extends javax.swing.JInternalFrame {
         int rowsAffected = pst.executeUpdate();
 
         if (rowsAffected > 0) {
-            JOptionPane.showMessageDialog(null, "Produto adicionado com sucesso");
+            JOptionPane.showMessageDialog(null, "Produto alterado com sucesso");
         } else {
-            JOptionPane.showMessageDialog(null, "Falha ao adicionar produto");
+            JOptionPane.showMessageDialog(null, "Falha ao alterar produto, as alterações não foram salvas");
         }
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, e);
-    }
-        
-        
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
     }
     
     
-    
-    
-    
-    //Metodo para voltar a desativar e limpar os atributos do produto na tela
-    private void desativarAtributosProduto(){
+    //METODO PARA LIMPAR OS CAMPOS DO PRODUTO E HABILITAR DIGITAÇÃO NOS CAMPOS
+    private void ativarAtributosProduto(){
         txtIdProduto.setText(null);
         txtDescricao.setText(null);
         txtPreco.setText(null);
@@ -198,10 +186,19 @@ public class Produto extends javax.swing.JInternalFrame {
         txtEstoque.setText(null);
         
         
-        txtDescricao.setEnabled(false);
-        txtPreco.setEnabled(false);
-        txtTipo.setEnabled(false);
-        txtEstoque.setEnabled(false);
+        txtDescricao.setEnabled(true);
+        txtPreco.setEnabled(true);
+        txtTipo.setEnabled(true);
+        txtEstoque.setEnabled(true);
+    }
+    
+    //Metodo para limpar os atributos do produto na tela
+    private void limparAtributosProduto(){
+        txtIdProduto.setText(null);
+        txtDescricao.setText(null);
+        txtPreco.setText(null);
+        txtTipo.setText(null);
+        txtEstoque.setText(null);
     }
     
     //Metodo para ativar campos de atributos do produto
@@ -210,8 +207,6 @@ public class Produto extends javax.swing.JInternalFrame {
         txtPreco.setEnabled(true);
         txtTipo.setEnabled(true);
         txtEstoque.setEnabled(true);
-        
-                
     }
     
     //metodo para desativar campos de atributos do produto
@@ -221,11 +216,13 @@ public class Produto extends javax.swing.JInternalFrame {
         txtTipo.setEnabled(false);
         txtEstoque.setEnabled(false);
     }
+    
     public void desabilitarBotoes(){
         btnAlterar.setEnabled(false);
         btnNovo.setEnabled(false);
         btnExcluir.setEnabled(false);
     }
+    
     public void habilitarBotoes(){
         btnAlterar.setEnabled(true);
         btnNovo.setEnabled(true);
@@ -433,6 +430,7 @@ public class Produto extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtTipoActionPerformed
 
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
+        txtIdProduto.setEnabled(false);
         confirma = "adicionar";
         btnConfirmar.setVisible(true);
         ativarAtributosProduto();
@@ -445,6 +443,7 @@ public class Produto extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
+        txtIdProduto.setEnabled(false);
         confirma = "alterar";
         habilitarCampos();
         btnConfirmar.setVisible(true);
@@ -462,11 +461,20 @@ public class Produto extends javax.swing.JInternalFrame {
             desabilitarCampos();
         }
         habilitarBotoes();
+        txtIdProduto.setEnabled(true);
+        btnConfirmar.setVisible(false);
+        btnCancelar.setVisible(false);
+        btnAlterar.setVisible(true);
+        btnExcluir.setVisible(true);
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        desativarAtributosProduto();
+        desabilitarCampos();
         habilitarBotoes();
+        btnConfirmar.setVisible(false);
+        btnCancelar.setVisible(false);
+        txtIdProduto.setEnabled(true);
+        
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     

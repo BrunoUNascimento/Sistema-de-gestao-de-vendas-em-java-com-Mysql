@@ -29,10 +29,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         menPedidos = new javax.swing.JMenuItem();
-        menNotaSaida = new javax.swing.JMenuItem();
         menProduto = new javax.swing.JMenuItem();
-        menRelatorios = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         menUsu = new javax.swing.JMenuItem();
+        menRelatorios = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         menOpc = new javax.swing.JMenu();
         menSai = new javax.swing.JMenuItem();
@@ -63,16 +63,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         jMenu1.add(menPedidos);
 
-        menNotaSaida.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menNotaSaida.setText("Nota de saida");
-        menNotaSaida.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menNotaSaidaActionPerformed(evt);
-            }
-        });
-        jMenu1.add(menNotaSaida);
-
-        menProduto.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menProduto.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menProduto.setText("Produto");
         menProduto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -81,10 +72,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         jMenu1.add(menProduto);
 
-        menRelatorios.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F6, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menRelatorios.setText("Relatórios");
-        menRelatorios.setEnabled(false);
-        jMenu1.add(menRelatorios);
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        jMenuItem1.setText("Notas");
+        jMenu1.add(jMenuItem1);
 
         menUsu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menUsu.setText("Usuarios");
@@ -95,6 +85,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
         jMenu1.add(menUsu);
+
+        menRelatorios.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F6, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menRelatorios.setText("Relatórios");
+        menRelatorios.setEnabled(false);
+        jMenu1.add(menRelatorios);
 
         jMenuBar1.add(jMenu1);
 
@@ -140,10 +135,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         setSize(new java.awt.Dimension(1138, 648));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void menNotaSaidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menNotaSaidaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_menNotaSaidaActionPerformed
 
     private void menPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menPedidosActionPerformed
         TelaPedido telaPedido = new TelaPedido();
@@ -217,7 +208,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public static javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem menNotaSaida;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenu menOpc;
     private javax.swing.JMenuItem menPedidos;
     private javax.swing.JMenuItem menProduto;
